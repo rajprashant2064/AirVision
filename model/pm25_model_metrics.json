@@ -1,0 +1,17 @@
+{
+    "model_name": "Random Forest Regressor",
+    "forecast_horizon_hours": 1,
+    "target": "PM2.5",
+    "target_unit": "\u00b5g/m\u00b3",
+    "training_rows": 210,
+    "testing_rows": 54,
+    "total_usable_rows": 264,
+    "city_count": 6,
+    "mae": 6.534679313071531,
+    "rmse": 9.459796252262198,
+    "r2": 0.9023688167801626,
+    "trained_at": "2026-10-29T04:48:24.660198+05:30",
+    "first_issue_time": "2026-10-27T03:00:00+00:00",
+    "last_issue_time": "2026-10-28T22:00:00+00:00",
+    "limitations": "Experimental one-hour-ahead forecast. Performance requires validation on a longer historical period."
+}
