@@ -22,7 +22,7 @@
    1. CONFIGURATION
 ========================================================= */
 
-const API_BASE_URL = window.location.origin;
+const API_BASE_URL = "";
 
 let pm25Chart = null;
 let forecastChart = null;
