@@ -1,0 +1,586 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="AirVision — Air pollution analytics, historical trends, weather observations, and experimental PM2.5 predictions."
+    >
+
+    <title>AirVision | Air Quality Analytics</title>
+
+    <!-- Existing stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js must load before script.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Main dashboard JavaScript -->
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+        <aside class="sidebar">
+
+            <div class="brand">
+                <div class="brand-icon">A</div>
+
+                <div>
+                    <h2>AirVision</h2>
+                    <p>Environmental Intelligence</p>
+                </div>
+            </div>
+
+            <div class="nav-heading">WORKSPACE</div>
+
+            <nav aria-label="Main navigation">
+                <a href="#overview" class="nav-link active">
+                    ▦ &nbsp; Overview
+                </a>
+
+                <a href="#air-quality" class="nav-link">
+                    ◉ &nbsp; Air Quality
+                </a>
+
+                <a href="#weather" class="nav-link">
+                    ☁ &nbsp; Weather
+                </a>
+
+                <a href="#predictions" class="nav-link">
+                    ⌁ &nbsp; Predictions
+                </a>
+
+                <a href="#model-performance" class="nav-link">
+                    ▥ &nbsp; Model Performance
+                </a>
+            </nav>
+
+            <!-- API and database connection status -->
+            <div class="sidebar-bottom">
+
+                <div class="status-dot"></div>
+
+                <div>
+                    <strong>System Status</strong>
+                    <p id="connection-status" role="status">
+                        Checking connection...
+                    </p>
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =================================================
+             MAIN DASHBOARD
+        ================================================== -->
+        <main class="main-content">
+
+            <!-- Header -->
+            <header class="topbar">
+
+                <div>
+                    <p class="eyebrow">
+                        ENVIRONMENTAL MONITORING PLATFORM
+                    </p>
+
+                    <h1>Air Quality Dashboard</h1>
+
+                    <p class="subtitle">
+                        Monitor pollution, explore trends and understand urban air quality.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    id="refresh-button"
+                    class="refresh-button"
+                >
+                    ↻ &nbsp; Refresh Data
+                </button>
+
+            </header>
+
+
+            <!-- =================================================
+                 OVERVIEW SECTION
+            ================================================== -->
+            <section id="overview" class="section">
+
+                <div class="section-heading">
+
+                    <div>
+                        <h2>City Overview</h2>
+
+                        <p>
+                            Explore available air-quality and weather observations.
+                        </p>
+                    </div>
+
+                    <div class="city-picker">
+
+                        <label for="city-select">
+                            Select city
+                        </label>
+
+                        <select id="city-select" name="city">
+                            <option value="">Loading cities...</option>
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- General dashboard errors -->
+                <div
+                    id="error-message"
+                    class="error-message hidden"
+                    role="alert"
+                    aria-live="polite"
+                ></div>
+
+
+                <!-- Air quality and weather metric cards -->
+                <div class="metric-grid">
+
+                    <!-- PM2.5 -->
+                    <article class="metric-card">
+
+                        <div class="metric-top">
+                            <span>PM2.5</span>
+                            <span class="metric-symbol">◉</span>
+                        </div>
+
+                        <h3 id="pm25-value">--</h3>
+
+                        <p>Fine particulate matter</p>
+
+                        <span class="metric-unit">µg/m³</span>
+
+                    </article>
+
+
+                    <!-- PM10 -->
+                    <article class="metric-card">
+
+                        <div class="metric-top">
+                            <span>PM10</span>
+                            <span class="metric-symbol">◌</span>
+                        </div>
+
+                        <h3 id="pm10-value">--</h3>
+
+                        <p>Coarse particulate matter</p>
+
+                        <span class="metric-unit">µg/m³</span>
+
+                    </article>
+
+
+                    <!-- Temperature -->
+                    <article class="metric-card">
+
+                        <div class="metric-top">
+                            <span>Temperature</span>
+                            <span class="metric-symbol">♨</span>
+                        </div>
+
+                        <h3 id="temperature-value">--</h3>
+
+                        <p>Latest weather observation</p>
+
+                        <span class="metric-unit">°C</span>
+
+                    </article>
+
+
+                    <!-- Humidity -->
+                    <article class="metric-card">
+
+                        <div class="metric-top">
+                            <span>Humidity</span>
+                            <span class="metric-symbol">◍</span>
+                        </div>
+
+                        <h3 id="humidity-value">--</h3>
+
+                        <p>Relative humidity</p>
+
+                        <span class="metric-unit">%</span>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 HISTORICAL AIR QUALITY
+            ================================================== -->
+            <section id="air-quality" class="section">
+
+                <div class="section-heading">
+
+                    <div>
+                        <h2>Pollution Trends</h2>
+
+                        <p>
+                            Historical observations available in the database.
+                        </p>
+                    </div>
+
+                    <span class="data-badge">
+                        Historical data
+                    </span>
+
+                </div>
+
+
+                <div class="chart-card">
+
+                    <div class="chart-heading">
+
+                        <div>
+                            <h3>PM2.5 over time</h3>
+
+                            <p id="chart-subtitle">
+                                Select a city to explore its data.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Fixed chart container -->
+                    <div class="chart-container">
+
+                        <canvas
+                            id="pm25-chart"
+                            role="img"
+                            aria-label="Historical PM2.5 trend chart"
+                        >
+                            Historical PM2.5 observations.
+                        </canvas>
+
+                    </div>
+
+
+                    <!-- Shown when no chart data is available -->
+                    <p
+                        id="chart-empty"
+                        class="empty-message hidden"
+                        role="status"
+                    >
+                        No PM2.5 observations are available for this city.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 WEATHER SECTION
+            ================================================== -->
+            <section id="weather" class="section">
+
+                <div class="section-heading">
+
+                    <div>
+                        <h2>Weather &amp; Environment</h2>
+
+                        <p>
+                            Weather observations associated with the selected city.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="weather-card">
+
+                    <!-- Temperature -->
+                    <div>
+                        <span class="weather-label">
+                            Latest temperature
+                        </span>
+
+                        <h3 id="weather-temperature">-- °C</h3>
+                    </div>
+
+
+                    <!-- Humidity -->
+                    <div>
+                        <span class="weather-label">
+                            Latest humidity
+                        </span>
+
+                        <h3 id="weather-humidity">-- %</h3>
+                    </div>
+
+
+                    <!-- Wind speed -->
+                    <div>
+                        <span class="weather-label">
+                            Latest wind speed
+                        </span>
+
+                        <h3 id="weather-wind">--</h3>
+
+                        <small>m/s, if supplied by the API</small>
+                    </div>
+
+
+                    <!-- Observation timestamp -->
+                    <div>
+                        <span class="weather-label">
+                            Observation time
+                        </span>
+
+                        <h3 id="weather-time">--</h3>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 PREDICTIONS SECTION
+            ================================================== -->
+            <section id="predictions" class="section">
+
+                <div class="section-heading">
+
+                    <div>
+                        <h2>PM2.5 Forecasting</h2>
+
+                        <p>
+                            Experimental one-hour-ahead predictions from the
+                            Random Forest model.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <!-- Prediction-specific errors -->
+                <div
+                    id="prediction-error"
+                    class="error-message hidden"
+                    role="alert"
+                    aria-live="polite"
+                ></div>
+
+
+                <!-- Prediction metrics -->
+                <div class="forecast-grid">
+
+                    <article class="forecast-metric">
+
+                        <span>Latest PM2.5</span>
+
+                        <h3 id="forecast-latest">--</h3>
+
+                        <small>µg/m³</small>
+
+                    </article>
+
+
+                    <article class="forecast-metric featured">
+
+                        <span>Predicted PM2.5</span>
+
+                        <h3 id="forecast-predicted">--</h3>
+
+                        <small>µg/m³ · one hour ahead</small>
+
+                    </article>
+
+
+                    <article class="forecast-metric">
+
+                        <span>Predicted Change</span>
+
+                        <h3 id="forecast-change">--</h3>
+
+                        <small id="forecast-change-note">
+                            Compared with latest value
+                        </small>
+
+                    </article>
+
+                </div>
+
+
+                <!-- Prediction comparison chart -->
+                <div class="chart-card forecast-chart-card">
+
+                    <div class="chart-heading">
+
+                        <div>
+                            <h3>Latest vs One-Hour Forecast</h3>
+
+                            <p id="forecast-time">
+                                Waiting for forecast...
+                            </p>
+                        </div>
+
+                        <span class="data-badge">
+                            Random Forest
+                        </span>
+
+                    </div>
+
+
+                    <div class="chart-container">
+
+                        <canvas
+                            id="forecast-chart"
+                            role="img"
+                            aria-label="Latest and predicted PM2.5 comparison chart"
+                        >
+                            Latest and predicted PM2.5 values.
+                        </canvas>
+
+                    </div>
+
+
+                    <p
+                        id="prediction-status"
+                        class="prediction-status"
+                    >
+                        Predictions are experimental model estimates,
+                        not official readings or health advice.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 MODEL PERFORMANCE
+            ================================================== -->
+            <section id="model-performance" class="section">
+
+                <div class="section-heading">
+
+                    <div>
+                        <h2>Model Performance</h2>
+
+                        <p>
+                            Metrics from the current training run.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="metric-grid model-metric-grid">
+
+                    <!-- MAE -->
+                    <article class="metric-card">
+
+                        <div class="metric-top">
+                            <span>Mean Absolute Error</span>
+                            <span class="metric-symbol">MAE</span>
+                        </div>
+
+                        <h3 id="model-mae">6.53</h3>
+
+                        <p>µg/m³ · lower is better</p>
+
+                    </article>
+
+
+                    <!-- RMSE -->
+                    <article class="metric-card">
+
+                        <div class="metric-top">
+                            <span>Root Mean Squared Error</span>
+                            <span class="metric-symbol">RMSE</span>
+                        </div>
+
+                        <h3 id="model-rmse">9.46</h3>
+
+                        <p>µg/m³ · lower is better</p>
+
+                    </article>
+
+
+                    <!-- R-squared -->
+                    <article class="metric-card">
+
+                        <div class="metric-top">
+                            <span>R² Score</span>
+                            <span class="metric-symbol">R²</span>
+                        </div>
+
+                        <h3 id="model-r2">0.902</h3>
+
+                        <p>Evaluation score</p>
+
+                    </article>
+
+
+                    <!-- Test rows -->
+                    <article class="metric-card">
+
+                        <div class="metric-top">
+                            <span>Test Rows</span>
+                            <span class="metric-symbol">N</span>
+                        </div>
+
+                        <h3 id="model-test-rows">54</h3>
+
+                        <p>Held-out test records</p>
+
+                    </article>
+
+                </div>
+
+
+                <p class="model-caveat">
+                    Preliminary evaluation on a small historical dataset.
+                    Collect more data and validate on genuinely future
+                    observations before relying on these metrics.
+                </p>
+
+            </section>
+
+
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
+            <footer>
+
+                <span>
+                    AirVision · Intelligent Air Pollution Prediction &amp; Analytics
+                </span>
+
+                <span id="last-updated">
+                    Not yet refreshed
+                </span>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+</body>
+</html>
